@@ -1,6 +1,8 @@
 ---
 title: "Chapter 2"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 # Chapter 2 R basics
 
@@ -98,7 +100,7 @@ log(a)
 You can find out what the function expects and what it does by reviewing the very useful manuals included in R. You can get help by using the ```help``` function like this:
 
 ```{r}
-help(log)
+help("log")
 ```
 
 For most functions, we can also use this shorthand:
@@ -241,9 +243,19 @@ c <- -1
 
 ## 2.3 Exercises
 
-1. What is the sum of the first 100 100 positive integers? The formula for the sum of integers 1 through _n_ is _n_(*n*+1)/2. Define *n* = 100 and  then use R to compute the sum of 1 through 100 using the formula. What is the sum?
+1. What is the sum of the first 100 positive integers? The formula for the sum of integers 1 through _n_ is _n_(*n*+1)/2. Define *n* = 100 and  then use R to compute the sum of 1 through 100 using the formula. What is the sum?
+
+```{r}
+n <-100
+n*(n+1)/2
+```
 
 2. Now use the same formula to compute the sum of the integers from 1 through 1,000.
+
+```{r}
+n <-1000
+n*(n+1)/2
+```
 
 3. Look at the result of typing the following code into R:
 
@@ -260,7 +272,19 @@ b. ```seq``` creates a list of numbers and ```sum``` adds them up.
 c. ```seq``` creates a random list and ```sum``` computes the sum of 1 through 1,000.
 d. ```sum``` always returns the same number.
 
+```{r}
+help(seq)
+help(sum)
+#answer is b
+```
+
+
 4. In math and programming, we say that we evaluate a function when we replace the argument with a given number. So if we type ```sqrt(4)```, we evaluate the ```sqrt``` function. In R, you can evaluate a function inside another function. The evaluations happen from the inside out. Use one line of code to compute the log, in base 10, of the square root of 100.
+
+```{r}
+log(sqrt(100),10)
+```
+
 
 5.Which of the following will always return the numeric value stored in ```x```? You can try out examples and use the help system if you want.
 
@@ -268,6 +292,15 @@ a. ```log(10^x)```
 b. ```log10(x^10)```
 c. ```log(exp(x))```
 d. ```exp(log(x, base =2))```
+
+```{r}
+x <- 5
+log(10^x)
+log10(x^10)
+log(exp(x))
+exp(log(x, base=2))
+#answer is c
+```
 
 ## 2.4 Data types
 
@@ -534,11 +567,33 @@ b. The murder rates for all 50 states and DC.
 c. The state name, the abbreviation of the state name, the state’s region, and the state’s population and total number of murders for 2010.
 d. ```str``` shows no relevant information.
 
+```{r}
+str(murders)
+
+#answer is c.
+```
+
 2. What are the column names used by the data frame for these five variables?
+
+```{r}
+#answer is state, abb, region, population and total.
+```
 
 3. Use the accessor ```$``` to extract the state abbreviations and assign them to the object ```a```. What is the class of this object?
 
+```{r}
+murders$abb
+a <- murders$abb
+class(a)
+```
+
 4. Now use the square brackets to extract the state abbreviations and assign them to the object ```b```. Use the ```identical``` function to determine if ```a``` and ```b``` are the same.
+
+```{r}
+murders[["abb"]]
+b <- murders[["abb"]]
+a==b
+```
 
 5. We saw that the ```region``` column stores a factor. You can corroborate this by typing:
 
@@ -548,7 +603,16 @@ class(murders$region)
 
 With one line of code, use the function ```levels``` and ```length``` to determine the number of regions defined by this dataset.
 
+```{r}
+length(levels(murders$region))
+```
+
 6. The function ```table``` takes a vector and returns the frequency of each element. You can quickly see how many states are in each region by applying this function. Use this function in one line of code to create a table of states per region.
+
+```{r}
+table(murders$region)
+```
+
 
 ## 2.6 Vectors
 
@@ -594,7 +658,7 @@ codes
 ```
 
 The object ```codes``` continues to be a numeric vector:
-
+ 
 ```{r}
 class(codes)
 ```
@@ -723,25 +787,78 @@ As a data scientist you will encounter the ```NA```s often as they are generally
 
 1. Use the function ```c``` to create a vector with the average high temperatures in January for Beijing, Lagos, Paris, Rio de Janeiro, San Juan, and Toronto, which are 35, 88, 42, 84, 81, and 30 degrees Fahrenheit. Call the object ```temp```.
 
+```{r}
+temp <- c(35,88,42,84,81,30)
+```
+
 2. Now create a vector with the city names and call the object ```city```.
+
+```{r}
+city <- c("Beijing", "Lagos", "Paris", "Rio de Janeiro", "San Juan", "Toronto")
+```
+
 
 3. Use the ```names``` function and the objects defined in the previous exercises to associate the temperature data with its corresponding city.
 
+```{r}
+names(temp) <- city
+temp
+```
+
+
 4. Use the ```[``` and ```:``` operators to access the temperature of the first three cities on the list.
+
+```{r}
+temp[1:3]
+```
+
 
 5. Use the ```[``` operator to access the temperature of Paris and San Juan.
 
+```{r}
+temp[c("Paris", "San Juan")]
+```
+
+
 6. Use the ```:``` operator to create a sequence of numbers 12,13,14,…,73.
+
+```{r}
+12:73
+```
 
 7. Create a vector containing all the positive odd numbers smaller than 100.
 
+```{r}
+c(seq(1,100,2))
+```
+
 8. Create a vector of numbers that starts at 6, does not pass 55, and adds numbers in increments of 4/7: 6, 6 + 4/7, 6 + 8/7, and so on. How many numbers does the list have? Hint: use ```seq``` and ```length```.
+
+```{r}
+length(c(seq(6,55,4/7)))
+```
 
 9. What is the class of the following object ```a <- seq(1, 10, 0.5)```?
 
+```{r}
+a <-seq(1,10,0.5)
+class(a)
+```
+
+
 10. What is the class of the following object ```a <- seq(1, 10)```?
 
+```{r}
+a <- seq(1,10)
+class(a)
+```
+
 11. The class of ```class(a<-1)``` is numeric, not integer. R defaults to numeric and to force an integer, you need to add the letter ```L```. Confirm that the class of ```1L``` is integer.
+
+```{r}
+class (a<-1L)
+```
+
 
 12. Define the following vector:
 ```{r}
@@ -749,6 +866,12 @@ x <- c("1", "3", "5")
 ```
 
 and coerce it to get integers.
+
+```{r}
+X <- as.integer(x)
+class(X)
+```
+
 
 ## 2.9 Sorting
 
@@ -835,6 +958,7 @@ rank(x)
 
 To summarize, let’s look at the results of the three functions we have introduced:
 
+![fifthimage](fifthimage)
 
 ### 2.9.5 Beware of recycling
 
