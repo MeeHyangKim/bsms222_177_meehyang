@@ -1381,6 +1381,7 @@ hist(population_in_millions)
 
 3. Generate boxplots of the state populations by region.
 
+
 ```{r}
 boxplot(population_in_millions~region,data=murders)
 ```
