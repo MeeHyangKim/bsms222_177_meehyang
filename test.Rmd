@@ -10,7 +10,10 @@ In this book, we will be using the R software environment for all our analysis. 
 
 Imagine you live in Europe and are offered a job in a US company with many locations across all states. It is a great job, but news with headlines such as **US Gun Homicide Rate Higher Than Other Developed Countries** have you worried. Charts like this may concern you even more:
 
+![firstimage](https://rafalab.github.io/dsbook/book_files/figure-html/murder-rate-example-1-1.png)
 Or even worse, this version from everytown.org:
+
+![secondimage](https://rafalab.github.io/dsbook/book_files/figure-html/murder-rate-example-2-1.png)
 
 But then you remember that the US is a large and diverse country with 50 very different states as well as the District of Columbia (DC).
 
@@ -45,14 +48,12 @@ To see the value stored in a variable, we simply ask R to evaluate ```a``` and i
 
 ```{r}
 a
-#> [1] 1
 ```
 
 A more explicit way to ask R to show us the value stored in ```a``` is using ```print``` like this:
 
 ```{r}
 print(a)
-#> [1] 1
 ```
 
 We use the term _object_ to describe stuff that is stored in R. Variables are examples, but objects can also be more complicated entities such as functions, which are described later.
@@ -63,9 +64,27 @@ As we define objects in the console, we are actually changing the _workspace_. Y
 
 ```{r}
 ls()
-#> [1] "a"  "b" "c" "dat" "img_path" "murder"
 ```
 
 In Rstudio, the _Environment_ tab shows the values: 
-![firstimage](https://rafalab.github.io/dsbook/R/img/rstudio-environment.png)
+![fourthimage](https://rafalab.github.io/dsbook/R/img/rstudio-environment.png)
+
+We should see ```a```, ```b```, and ```c```. If you try to recover the value of a variable that is not in your workspace, you receive an error. For example, if you type ```x``` you will receive the following message: ```Error: object 'x' not found```.
+
+Now since these values are saved in variables, to obtain a solution to our equation, we use the quadratic formula:
+
+```{r}
+(-b+sqrt(b^2 - 4*a*c))/(2*a)
+(-b-sqrt(b^2 - 4*a*c))/(2*a)
+```
+
+### 2.2.3 Functions
+
+Once you define variables, the data analysis process can usually be described as a series of functions applied to the data. R includes several predefined functions and most of the analysis pipelines we construct make extensive use of these.
+
+We already used the ```install.packages```, ```library```, and ```ls``` functions. We also used the function ```sqrt``` to solve the quadratic equation above. There are many more prebuilt functions and even more can be added through packages. These functions do not appear in the workspace because you did not define them, but they are available for immediate use.
+
+In general, we need to use parentheses to evaluate a function. If you type ```ls```, the function is not evaluated and instead R shows you the code that defines the function. If you type ```ls()``` the function is evaluated and, as seen above, we see objects in the workspace.
+
+Unlike ```ls```, most functions require one or more _arguments_. Below is an example of how we assign an object to the argument of the function ```log```. Remember that we earlier defined ```a``` to be 1:
 
