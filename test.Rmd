@@ -8,7 +8,7 @@ In this book, we will be using the R software environment for all our analysis. 
 
 ## 2.1 Case study: US Gun Murders
 
-Imagine you live in Europe and are offered a job in a US company with many locations across all states. It is a great job, but news with headlines such as _US Gun Homicide Rate Higher Than Other Developed Countries_ have you worried. Charts like this may concern you even more:
+Imagine you live in Europe and are offered a job in a US company with many locations across all states. It is a great job, but news with headlines such as **US Gun Homicide Rate Higher Than Other Developed Countries** have you worried. Charts like this may concern you even more:
 
 Or even worse, this version from everytown.org:
 
@@ -45,6 +45,27 @@ To see the value stored in a variable, we simply ask R to evaluate ```a``` and i
 
 ```{r}
 a
-#> _[1] 1_
+#> [1] 1
 ```
+
+A more explicit way to ask R to show us the value stored in ```a``` is using ```print``` like this:
+
+```{r}
+print(a)
+#> [1] 1
+```
+
+We use the term _object_ to describe stuff that is stored in R. Variables are examples, but objects can also be more complicated entities such as functions, which are described later.
+
+### 2.2.2 The workspace
+
+As we define objects in the console, we are actually changing the _workspace_. You can see all the variables saved in your workspace by typing:
+
+```{r}
+ls()
+#> [1] "a"  "b" "c" "dat" "img_path" "murder"
+```
+
+In Rstudio, the _Environment_ tab shows the values: 
+![firstimage](https://rafalab.github.io/dsbook/R/img/rstudio-environment.png)
 
