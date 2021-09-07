@@ -1295,9 +1295,9 @@ murders$state[ind]
 7. Use the ```%in%``` operator to create a logical vector that answers the question: which of the following are actual abbreviations: MA, ME, MI, MO, MU?
 
 ```{r}
-c("MA","ME","MI","MO","MU")%in%murders$abb
+a <-c("MA","ME","MI","MO","MU")
+a[a%in%murders$abb]
 ```
-
 
 8. Extend the code you used in exercise 7 to report the one entry that is **not** an actual abbreviation. Hint: use the ```!``` operator, which turns ```FALSE``` into ```TRUE``` and vice versa, then ```which``` to obtain an index.
 
