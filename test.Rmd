@@ -76,8 +76,8 @@ We should see ```a```, ```b```, and ```c```. If you try to recover the value of 
 Now since these values are saved in variables, to obtain a solution to our equation, we use the quadratic formula:
 
 ```{r}
-(-b+sqrt(b^2 - 4*a*c))/(2*a)
-(-b-sqrt(b^2 - 4*a*c))/(2*a)
+round((-b+sqrt(b^2 - 4*a*c))/(2*a),3)
+round((-b-sqrt(b^2 - 4*a*c))/(2*a),2)
 ```
 
 ### 2.2.3 Functions
@@ -91,7 +91,7 @@ In general, we need to use parentheses to evaluate a function. If you type ```ls
 Unlike ```ls```, most functions require one or more _arguments_. Below is an example of how we assign an object to the argument of the function ```log```. Remember that we earlier defined ```a``` to be 1:
 
 ```{r}
-log(8)
+round(log(8),2)
 log(a)
 ```
 
@@ -186,7 +186,7 @@ Other prebuilt objects are mathematical quantities, such as the constant
 π and ∞:
 
 ```{r}
-pi
+round(pi,2)
 Inf+1
 ```
 
