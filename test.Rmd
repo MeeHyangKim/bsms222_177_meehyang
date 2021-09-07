@@ -1,13 +1,38 @@
 ---
-title: "R Notebook"
+title: "Chapter 2"
 output: html_notebook
 ---
+# Chapter 2 R basics
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+In this book, we will be using the R software environment for all our analysis. You will learn R and data analysis techniques simultaneously. To follow along you will therefore need access to R. We also recommend the use of an integrated development environment (IDE), such as RStudio, to save your work. Note that it is common for a course or workshop to offer access to an R environment and an IDE through your web browser, as done by RStudio cloud. If you have access to such a resource, you don’t need to install R and RStudio. However, if you intend on becoming an advanced data analyst, we highly recommend installing these tools on your computer. Both R and RStudio are free and available online.
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+## 2.1 Case study: US Gun Murders
+
+Imagine you live in Europe and are offered a job in a US company with many locations across all states. It is a great job, but news with headlines such as _US Gun Homicide Rate Higher Than Other Developed Countries_ have you worried. Charts like this may concern you even more:
+
+Or even worse, this version from everytown.org:
+
+But then you remember that the US is a large and diverse country with 50 very different states as well as the District of Columbia (DC).
+
+California, for example, has a larger population than Canada, and 20 US states have populations larger than that of Norway. In some respects, the variability across states in the US is akin to the variability across countries in Europe. Furthermore, although not included in the charts above, the murder rates in Lithuania, Ukraine, and Russia are higher than 4 per 100,000. So perhaps the news reports that worried you are too superficial. You have options of where to live and want to determine the safety of each particular state. We will gain some insights by examining data related to gun homicides in the US during 2010 using R.
+
+Before we get started with our example, we need to cover logistics as well as some of the very basic building blocks that are required to gain more advanced R skills. Be aware that the usefulness of some of these building blocks may not be immediately obvious, but later in the book you will appreciate having mastered these skills.
+
+
+## 2.2 The very basics
+
+Before we get started with the motivating dataset, we need to cover the very basics of R.
+
+### 2.2.1 Objects
+
+Suppose a high school student asks us for help solving several quadratic equations of the form $ax^2+bx+c=0.$ The quadratic formula gives us the solutions:
+$${-b-\sqrt{b^2-4ac} \over 2a}and {-b+\sqrt{b^2-4ac} \over 2a}$$
+which of course change depending on the values of $a,$ $b,$ $c.$ One advantage of programming languages is that we can define variables and write expressions with these variables, similar to how we do so in math, but obtain a numeric solution. We will write out general code for the quadratic equation below, but if we are asked to solve $x^2+x-1=0.$, then we define:
 
 ```{r}
-plot(cars)
+a <- 1
+b <- 1
+c <- -1
 ```
 
+which stores the values for later use. We use ```<-``` to assign values to the variables.
