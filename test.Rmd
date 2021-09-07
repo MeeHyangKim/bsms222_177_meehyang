@@ -929,7 +929,7 @@ If we have two vectors of the same length, and we sum them in R, they will be ad
 $$\begin{pmatrix}
 a\\b\\c\\d\end{pmatrix} + \begin{pmatrix}e\\f\\g\\h\end{pmatrix}=\begin{pmatrix}a+e\\b+f\\c+g\\d+h\end{pmatrix}$$
 
-The same holds for other mathematical operations, such as ```-```, ```*``` and ```/.
+The same holds for other mathematical operations, such as ```-```, ```*``` and ```/```.
 
 This implies that to compute the murder rates we can simply type:
 ```{r}
@@ -964,9 +964,60 @@ library(dslabs)
 data("murders")
 ```
 
-### 2. 13.1 Subsetting with logicals 
+### 2.13.1 Subsetting with logicals 
 
 We have now calculated the murder rate using:
+```{r}
+murder_rate <- murders$total / murders$population *100000
+```
+
+Imagine you are moving from Italy where, according to an ABC news report, the murder rate is only 0.71 per 100,000. You would prefer to move to a state with a similar murder rate. Another powerful feature of R is that we can use logicals to index vectors. If we compare a vector to a single number, it actually performs the test for each entry. The following is an example related to the question above:
+
+```{r}
+ind <- murder_rate < 0.71
+```
+
+If we instead want to know if a value is less or equal, we can use:
+
+```{r}
+ind <- murder_rate <= 0.71
+```
+
+Note that we get back a logical vector with ```TRUE``` for each entry smaller than or equal to 0.71. To see which states these are, we can leverage the fact that vectors can be indexed with logicals.
+
+```{r}
+murders$state[ind]
+```
+
+In order to count how many are TRUE, the function ```sum``` returns the sum of the entries of a vector and logical vectors get coerced to numeric with ```TRUE``` coded as 1 and ```FALSE``` as 0. Thus we can count the states using:
+
+```{r}
+sum(ind)
+```
+
+### 2.13.2 Logical operators
+
+Suppose we like the mountains and we want to move to a safe state in the western region of the country. We want the murder rate to be at most 1. In this case, we want two different things to be true. Here we can use the logical operator and, which in R is represented with ```&```. This operation results in ```TRUE``` only when both logicals are ```TRUE```. To see this, consider this example:
+```{r}
+TRUE & TRUE
+TRUE&FALSE
+FALSE&FALSE
+```
+
+For our example, we can form two logicals:
+```{r}
+west <- murders$region == "West"
+safe <- murder_rate <= 1
+```
+
+and we can use the ```&``` to get a vector of logicals that tells us which states satisfy both conditions:
+
+```{r}
+ind <- safe & west
+murders$state [ind]
+```
+
+### 2.13.3 ```which```
 
 
 
