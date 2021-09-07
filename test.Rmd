@@ -958,7 +958,6 @@ rank(x)
 
 To summarize, let’s look at the results of the three functions we have introduced:
 
-![fifthimage](fifthimage)
 
 ### 2.9.5 Beware of recycling
 
@@ -982,11 +981,32 @@ data("murders")
 
 1. Use the ```$``` operator to access the population size data and store it as the object ```pop```. Then use the ```sort``` function to redefine ```pop``` so that it is sorted. Finally, use the ```[``` operator to report the smallest population size.
 
+```{r}
+pop <- murders$population
+spop <- sort(pop)
+spop[1]
+```
+
+
 2. Now instead of the smallest population size, find the index of the entry with the smallest population size. Hint: use ```order``` instead of ```sort```.
+
+```{r}
+s <-order(pop)
+s[1]
+```
 
 3. We can actually perform the same operation as in the previous exercise using the function ```which.min```. Write one line of code that does this.
 
+```{r}
+which.min(pop)
+```
+
 4. Now we know how small the smallest state is and we know which row represents it. Which state is it? Define a variable ```states``` to be the state names from the ```murders``` data frame. Report the name of the state with the smallest population.
+
+```{r}
+states <- murders$state
+states[51]
+```
 
 5. You can create a ```data frame``` using the data.frame function. Here is a quick example:
 ```{r}
@@ -998,7 +1018,19 @@ city_temps <- data.frame(name = city, temperature = temp)
 
 Use the ```rank``` function to determine the population rank of each state from smallest population size to biggest. Save these ranks in an object called ```ranks```, then create a data frame with the state name and its rank. Call the data frame ```my_df```.
 
+```{r}
+ranks <-rank(murders$population)
+my_df <- data.frame(name=murders$state,rank=ranks)
+my_df
+```
+
 6. Repeat the previous exercise, but this time order ```my_df``` so that the states are ordered from least populous to most populous. Hint: create an object ```ind``` that stores the indexes needed to order the population values. Then use the bracket operator ```[``` to re-order each column in the data frame.
+
+```{r}
+ind <- order(murders$population)
+my_df <- data.frame(name=murders$state[ind],rank=ranks[ind])
+my_df
+```
 
 7. The ```na_example``` vector represents a series of counts. You can quickly examine the object using:
 
@@ -1014,7 +1046,18 @@ mean(na_example)
 
 The ```is.na``` function returns a logical vector that tells us which entries are ```NA```. Assign this logical vector to an object called ```ind``` and determine how many ```NA```s does ```na_example``` have.
 
+```{r}
+ind <-is.na(na_example)
+sum(ind)
+```
+
+
 8. Now compute the average again, but only for the entries that are not ```NA```. Hint: remember the ```!``` operator.
+
+```{r}
+mean(na_example[!ind])
+```
+
 
 ## 2.11 Vector arithmetics
 
@@ -1075,9 +1118,28 @@ city_temps <- data.frame(name = city, temperature = temp)
 ```
 Remake the data frame using the code above, but add a line that converts the temperature from Fahrenheit to Celsius. The conversion is $C= {5\over9}×(F-32)$.
 
+```{r}
+celcius <-5/9 * (temp-32)
+city_temps <- data.frame(name=city, temperature=celcius)
+city_temps
+```
+
+
 2. What is the following sum $1+1/2^2+1/3^2+...1/100^2$? Hint: thanks to Euler, we know it should be close to $\pi^2/6$.
 
+```{r}
+n <- 100
+x <-(1:n)
+sum(1/x^2)
+```
+
 3. Compute the per 100,000 murder rate for each state and store it in the object ```murder_rate```. Then compute the average murder rate for the US using the function ```mean```. What is the average?
+
+```{r}
+murder_rate <-murders$total/murders$population*100000
+mean(murder_rate)
+```
+
 
 ## 2.13 Indexing
 
@@ -1191,19 +1253,60 @@ data(murders)
 
 1. Compute the per 100,000 murder rate for each state and store it in an object called ```murder_rate```. Then use logical operators to create a logical vector named ```low``` that tells us which entries of ```murder_rate``` are lower than 1.
 
+```{r}
+murder_rate <-murders$total/murders$population*100000
+low <- murder_rate<1
+```
+
 2. Now use the results from the previous exercise and the function ```which``` to determine the indices of ```murder_rate``` associated with values lower than 1.
+
+```{r}
+which(low)
+```
+
 
 3. Use the results from the previous exercise to report the names of the states with murder rates lower than 1.
 
+```{r}
+murders$state[low]
+```
+
 4. Now extend the code from exercises 2 and 3 to report the states in the Northeast with murder rates lower than 1. Hint: use the previously defined logical vector ```low``` and the logical operator ```&```.
+
+```{r}
+ind <-low&murders$region == "Northeast"
+murders$state[ind]
+```
 
 5. In a previous exercise we computed the murder rate for each state and the average of these numbers. How many states are below the average?
 
+```{r}
+sum(murder_rate<mean(murder_rate))
+```
+
+
 6. Use the match function to identify the states with abbreviations AK, MI, and IA. Hint: start by defining an index of the entries of ```murders$abb``` that match the three abbreviations, then use the ```[``` operator to extract the states.
+
+```{r}
+ind <- match(c("AK","MI","IA"), murders$abb)
+murders$state[ind]
+```
 
 7. Use the ```%in%``` operator to create a logical vector that answers the question: which of the following are actual abbreviations: MA, ME, MI, MO, MU?
 
+```{r}
+c("MA","ME","MI","MO","MU")%in%murders$abb
+```
+
+
 8. Extend the code you used in exercise 7 to report the one entry that is **not** an actual abbreviation. Hint: use the ```!``` operator, which turns ```FALSE``` into ```TRUE``` and vice versa, then ```which``` to obtain an index.
+
+```{r}
+a <- c("MA","ME","MI","MO","MU")
+ind <-c("MA","ME","MI","MO","MU")%in%murders$abb
+a[which(!ind)]
+```
+
 
 ## 2.15 Basic plots
 
@@ -1272,7 +1375,21 @@ plot(population_in_millions, total_gun_murders)
 ```
 Keep in mind that many states have populations below 5 million and are bunched up. We may gain further insights from making this plot in the log scale. Transform the variables using the ```log10``` transformation and then plot them.
 
+```{r}
+pop <-log10(murders$population)
+tot <-log10(total_gun_murders)
+plot(pop,tot)
+```
 2. Create a histogram of the state populations.
 
+```{r}
+hist(population_in_millions)
+```
+
 3. Generate boxplots of the state populations by region.
+
+```{r}
+boxplot(population_in_millions~region,data=murders)
+```
+
 
