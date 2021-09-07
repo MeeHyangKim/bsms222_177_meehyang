@@ -36,3 +36,15 @@ c <- -1
 ```
 
 which stores the values for later use. We use ```<-``` to assign values to the variables.
+
+We can also assign values using ```=``` instead of ```<-```, but we recommend against using ```=``` to avoid confusion. 
+
+Copy and paste the code above into your console to define the three variables. Note that R does not print anything when we make this assignment. This means the objects were defined successfully. Had you made a mistake, you would have received an error message.
+
+To see the value stored in a variable, we simply ask R to evaluate ```a``` and it shows the stored value:
+
+```{r}
+a
+#> _[1] 1_
+```
+
