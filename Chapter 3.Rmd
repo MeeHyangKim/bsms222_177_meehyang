@@ -314,7 +314,7 @@ my_func <- function(y){
   x <- 5
   y+5
 }
-##answer is 3
+# answer is 3
 ```
 
 7. Write a function compute_s_n that for any given  *n*  computes the sum $S_{n}=1^2+2^2+3^2+...n^2$. Report the value of the sum when $n=10$.
