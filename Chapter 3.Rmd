@@ -358,7 +358,6 @@ n <-1:25
 plot(n,s_n)
 ```
 
-
 12. Confirm that the formula for this sum is $S_{n}=n(n+1)(2n+1)/6$
 
 ```{r}
