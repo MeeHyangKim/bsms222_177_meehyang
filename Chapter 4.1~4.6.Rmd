@@ -74,7 +74,7 @@ d. ```ChickWeight``` is tidy: it is stored in a data frame.
 ```{r}
 ChickWeight
 
-# answer is d
+#answer is d
 ```
 3. Examine the built-in dataset ```BOD```. Which of the following is true:
 
@@ -84,7 +84,8 @@ c. ```BOD``` is tidy: each row is an observation with two values (time and deman
 d. ```BOD``` is tidy: all small datasets are tidy by definition.
 ```{r}
 BOD
-# answer is c
+
+#answer is c
 ```
 4. Which of the following built-in datasets is tidy (you can pick more than one):
 
