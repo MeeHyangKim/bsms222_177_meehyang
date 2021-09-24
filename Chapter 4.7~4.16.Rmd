@@ -162,9 +162,11 @@ Note that rows are not sorted by ```rate```, only filtered. If we want to sort, 
 ## 4.10 Exercises
 For these exercises, we will be using the data from the survey collected by the United States National Center for Health Statistics (NCHS). This center has conducted a series of health and nutrition surveys since the 1960’s. Starting in 1999, about 5,000 individuals of all ages have been interviewed every year and they complete the health examination component of the survey. Part of the data is made available via the **NHANES** package. Once you install the **NHANES** package, you can load the data like this:
 ```{r}
+install.packages("NHANES")
 library(NHANES)
 data(NHANES)
 ```
+
 The **NHANES** data has many missing values. The ```mean``` and ```sd``` functions in R will return ```NA``` if any of the entries of the input vector is an NA. Here is an example:
 ```{r}
 library(dslabs)
@@ -188,17 +190,46 @@ Let’s now explore the NHANES data.
 
 Hint: Use ```filter``` and ```summarize``` and use the ```na.rm = TRUE``` argument when computing the average and standard deviation. You can also filter the NA values using ```filter```.
 
+```{r}
+ref <- NHANES %>% filter(AgeDecade== ' 20-29') %>% summarize(average=mean(BPSysAve,na.rm=TRUE),standard_deviation=sd(BPSysAve,na.rm=TRUE))
+```
+
 2. Using a pipe, assign the average to a numeric variable ```ref_avg```. Hint: Use the code similar to above and then ```pull```.
+
+```{r}
+ref_avg <- ref %>% pull(average)
+```
 
 3. Now report the min and max values for the same group.
 
+```{r}
+NHANES %>% filter(AgeDecade== ' 20-29') %>% select(BPSysAve) %>% min(na.rm=TRUE)
+NHANES %>% filter(AgeDecade== ' 20-29') %>% select(BPSysAve) %>% max(na.rm=TRUE)
+```
+
 4. Compute the average and standard deviation for females, but for each age group separately rather than a selected decade as in question 1. Note that the age groups are defined by ```AgeDecade```. Hint: rather than filtering by age and gender, filter by ```Gender``` and then use ```group_by```.
+
+```{r}
+NHANES %>% filter(Gender=='female') %>% group_by(AgeDecade) %>% summarize(average=mean(BPSysAve,na.rm=TRUE),standard_deviation=sd(BPSysAve,na.rm=TRUE))
+```
 
 5. Repeat exercise 4 for males.
 
+```{r}
+NHANES %>% filter(Gender=='male') %>% group_by(AgeDecade) %>% summarize(average=mean(BPSysAve,na.rm=TRUE),standard_deviation=sd(BPSysAve,na.rm=TRUE))
+```
+
 6. We can actually combine both summaries for exercises 4 and 5 into one line of code. This is because ```group_by``` permits us to group by more than one variable. Obtain one big summary table using ```group_by(AgeDecade, Gender)```.
 
+```{r}
+NHANES %>% group_by(AgeDecade, Gender) %>% summarize(average=mean(BPSysAve,na.rm=TRUE),standard_deviation=sd(BPSysAve,na.rm=TRUE))
+```
+
 7. For males between the ages of 40-49, compare systolic blood pressure across race as reported in the ```Race1``` variable. Order the resulting table from lowest to highest average systolic blood pressure.
+
+```{r}
+NHANES %>% filter(Gender=='male',AgeDecade==' 40-49') %>% group_by(Race1) %>% summarize(average=mean(BPSysAve,na.rm=TRUE)) %>% arrange(average)
+```
 
 ## 4.11 Tibbles
 Tidy data must be stored in data frames. We introduced the data frame in Section 2.4.1 and have been using the ```murders``` data frame throughout the book. In Section 4.7.3 we introduced the ```group_by``` function, which permits stratifying data before computing summary statistics. But where is the group information stored in the data frame?
@@ -390,16 +421,37 @@ a. ```murders``` is in tidy format and is stored in a tibble.
 b. ```murders``` is in tidy format and is stored in a data frame.
 c. ```murders``` is not in tidy format and is stored in a tibble.
 d. ```murders``` is not in tidy format and is stored in a data frame.
+```{r}
+View(murders)
+# answer is b.
+```
 
 2. Use ```as_tibble``` to convert the ```murders``` data table into a tibble and save it in an object called ```murders_tibble```.
+```{r}
+murders_tibble <- as_tibble(murders)
+```
+
 
 3. Use the ```group_by``` function to convert ```murders``` into a tibble that is grouped by region.
-
+```{r}
+murders %>% group_by(region)
+```
 4. Write tidyverse code that is equivalent to this code:
 ```{r}
 exp(mean(log(murders$population)))
-
 ```
 Write it using the pipe so that each function is called without arguments. Use the dot operator to access the population. Hint: The code should start with ```murders %>%```.
+```{r}
+murders %>% .$population %>% log() %>% mean() %>% exp()
+```
 
 5. Use the ```map_df``` to create a data frame with three columns named ```n```, ```s_n```, and ```s_n_2```. The first column should contain the numbers 1 through 100. The second and third columns should each contain the sum of 1 through ```n``` with *n* the row number.
+```{r}
+compute_s_n <- function(n){
+  x<-1:n
+  tibble(n=n, s_n=sum(x), s_n_2=sum(x))
+}
+n<-1:100
+map_df(n, compute_s_n)
+```
+
