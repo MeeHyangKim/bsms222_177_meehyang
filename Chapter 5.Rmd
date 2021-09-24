@@ -7,7 +7,6 @@ We have been using data sets already stored as R objects. A data scientist will 
 When creating spreadsheets with text files, like the ones created with a simple text editor, a new row is defined with return and columns are separated with some predefined special character. The most common characters are comma (```,```), semicolon (```;```), space ( ), and tab (a preset number of spaces or ```\t```). Here is an example of what a comma separated file looks like if we open it with a basic text editor:
 
 
-
 The first row contains column names rather than data. We call this a header, and when we read-in data from a spreadsheet it is important to know if the file has a header or not. Most reading functions assume there is a header. To know if the file has a header, it helps to look at the file before trying to read it. This can be done with a text editor or with RStudio. In RStudio, we can do this by either opening the file in the editor or navigating to the file location, double clicking on the file, and hitting *View File*.
 
 However, not all spreadsheet files are in a text format. Google Sheets, which are rendered on a browser, are an example. Another example is the proprietary format used by Microsoft Excel. These can’t be viewed with a text editor. Despite this, due to the widespread use of Microsoft Excel software, this format is widely used.
@@ -20,6 +19,7 @@ The first step when importing data from a spreadsheet is to locate the file cont
 The main challenge in this first step is that we need to let the R functions doing the importing know where to look for the file containing the data. The simplest way to do this is to have a copy of the file in the folder in which the importing functions look by default. Once we do this, all we have to supply to the importing function is the filename.
 
 A spreadsheet containing the US murders data is included as part of the **dslabs** package. Finding this file is not straightforward, but the following lines of code copy the file to the folder in which R looks in by default. We explain how these lines work below.
+
 
 ```{r}
 filename <- "murders.csv"
@@ -37,7 +37,7 @@ dat <- read_csv(filename)
 The data is imported and stored in ```dat```. The rest of this section defines some important concepts and provides an overview of how we write code that tells R how to find the files we want to import. Chapter 38 provides more details on this topic.
 
 ### 5.1.1 The filesystem
-You can think of your computer’s filesystem as a series of nested folders, each containing other folders and files. Data scientists refer to folders as *directories*. We refer to the folder that contains all other folders as the root directory. We refer to the directory in which we are currently located as the *working directory*. The working directory therefore changes as you move through folders: think of it as your current location.
+You can think of your computer’s filesystem as a series of nested folders, each containing other folders and files. Data scientists refer to folders as *directories*. We refer to the folder that contains all other folders as the *root directory*. We refer to the directory in which we are currently located as the *working directory*. The working directory therefore changes as you move through folders: think of it as your current location.
 
 ### 5.1.2 Relative and full paths
 The *path* of a file is a list of directory names that can be thought of as instructions on what folders to click on, and in what order, to find the file. If these instructions are for finding the file from the root directory we refer to it as the *full path*. If the instructions are for finding the file starting in the working directory we refer to it as a *relative path*. Section 38.3 provides more details on this topic.
@@ -93,8 +93,7 @@ fullpath <- file.path(dir, filename)
 ### 5.1.5 Copying files using paths
 The final line of code we used to copy the file into our home directory used the function ```file.copy```. This function takes two arguments: the file to copy and the name to give it in the new directory.
 ```{r}
-file.copy(fullpath, "murders.csv")
-
+# file.copy(fullpath,"murders.csv")
 ```
 
 If a file is copied successfully, the ```file.copy``` function returns ```TRUE```. Note that we are giving the file the same name, ```murders.csv```, but we could have named it anything. Also note that by not starting the string with a slash, R assumes this is a relative path and copies the file to the working directory.
@@ -111,7 +110,6 @@ In this section we introduce the main tidyverse data importing functions. We wil
 filename <- "murders.csv"
 dir <- system.file("extdata", package = "dslabs") 
 fullpath <- file.path(dir, filename)
-
 ```
 
 ### 5.2.1 readr
@@ -126,7 +124,6 @@ Although the suffix usually tells us what type of file it is, there is no guaran
 
 ```{r}
 read_lines("murders.csv", n_max = 3)
-
 ```
 
 This also shows that there is a header. Now we are ready to read-in the data into R. From the .csv suffix and the peek at the file, we know to use ```read_csv```:
@@ -162,9 +159,21 @@ files <- list.files(path)
 files
 ```
 
+```{r}
+library(readr)
+fullpath<- file.path(path,files[i])
+file.copy(fullpath[i],files[i])
+for(i in c(2,3,5,6,7,9))
+{read_csv(files[i])}
+```
+
 2. Note that the last one, the ```olive``` file, gives us a warning. This is because the first line of the file is missing the header for the first column.
 
 Read the help file for ```read_csv``` to figure out how to read in the file without reading this header. If you skip the header, you should not get this warning. Save the result to an object called ```dat```.
+
+```{r}
+dat <- read_csv('olive.csv',col_names=FALSE)
+```
 
 3. A problem with the previous approach is that we don’t know what the columns represent. Type:
 ```{r}
@@ -174,11 +183,14 @@ to see that the names are not informative.
 
 Use the ```readLines``` function to read in just the first line (we later learn how to extract values from the output).
 
+```{r}
+readLines(con="olive.csv",n=1)
+```
+
 ## 5.4 Downloading files
 Another common place for data to reside is on the internet. When these data are in files, we can download them and then import them or even read them directly from the web. For example, we note that because our **dslabs** package is on GitHub, the file we downloaded with the package has a url:
 ```{r}
-url <- "https://raw.githubusercontent.com/rafalab/dslabs/master/inst/
-extdata/murders.csv"
+url <- "https://raw.githubusercontent.com/rafalab/dslabs/master/inst/extdata/murders.csv"
 ```
 
 The ```read_csv``` file can read these files directly:
@@ -254,3 +266,12 @@ Although this book focuses almost exclusively on data analysis, data management 
 
 ## 5.9 Exercises
 1. Pick a measurement you can take on a regular basis. For example, your daily weight or how long it takes you to run 5 miles. Keep a spreadsheet that includes the date, the hour, the measurement, and any other informative variable you think is worth keeping. Do this for 2 weeks. Then make a plot.
+
+```{r}
+data_df<- read.csv("fine dust concentration.csv")
+plot(data_df)
+```
+
+
+
+
