@@ -81,7 +81,6 @@ head(d$Seizures)
 So we want to subset rows where the seizure phenotype is available.
 ```{r}
 d1 = d[d$Seizures=='Y',]
-
 ```
 
 Let's see how many samples have seizure phenotypes? Then, you can ask when is the earliest days for the representation of seizure phenotype? How can we check this? The fisrt, as seen previously the ```SeizureOnsetDays``` column is character so we cannot apply functions for numeric.
@@ -146,9 +145,6 @@ Sketch a plot to visualize your analysis.
 
 **Figure 1. Standard mutation nomenclature** (Ogino et al. 2007). According to this guideline, genetic mutations can be represented for coding DNA reference sequences (```c.``` prefix ) and protein-level amino acid sequences (```p.``` prefix).
 
-
-
-
 ## 3.1. For-loops and Vectorization
 Here we examine more details of genetic mutations as to their functional consequence and position of SCN2A mutations. In the dataset includes, there are two columns called ```c.DNA``` and ```p.Protein```, containing the cDNA or protein position for the genetic mutations.
 During these exercises, we will look at the concept of ```for-loop``` and ```vectorization```, which you learn from the Chapter 3.4. Let's look at the column ```p.Protein```. It contains protein positions from each patient. What would you check at the first place?
@@ -173,12 +169,15 @@ In the dataset, we have many rows for protein positions. One way we might try is
 for (i in 1:293) {
   a <- gsub('[^0-9]', '', d[i, 'p.Protein'] )
 }
+a
 ```
 
 Do you think this is an effective approach? As we have done in your assignment, ```for-loop``` is not a good choice to process vectors because R can do vectorization for this process with a shorter and clearer code. So this mean you can apply ```gsub``` on vector and return your output to another column (could be new assign). 
 
 ```{r}
-# Please write a code to do vectorization
+i<-1:293
+n_a<-gsub('[^0-9]', '', d$p.Protein)
+n_a
 ```
 
 ## 3.2. Counting the recurrent mutations
@@ -190,39 +189,51 @@ c <- as.data.frame(table(d$p.Protein))
 
 or we can check the number of unique variants in the dataset by:
 ```{r}
-# Please write your code
+nrow(c)
+length(which(c$Freq=="1"))
 ```
 
 How many unique variants you can find? and which variants are occurred in multiple times?
 Then, you can use other columns to check frequency for different groups. Which columns you would use for more grouping?
 If you find that, please check the recurrent mutations for each group.
 ```{r}
-# Please write your code
+length(which(c$Freq>"1"))
+c_d <- as.data.frame(table(d$c.DNA))
+length(which(c_d$Freq > "1"))
+Pos_d <- as.data.frame(table(d$Pos_hg19))
+length(which(Pos_d$Freq > "1"))
 ```
+
 
 ## 3.3. What is the proportion of diagnosis for SCN2A patient?
 SCN2A mutation can have multiple different consequences for disease phenotypes. It can cause ASD but also other neurodevelopmental conditions. In total cases, how many phenotypes occur in SCN2A patients. Then, calculate the proportion of the phenotypes among total cases. 
 ```{r}
-# Please write your code
+cl <- as.data.frame(table(d$Classification))
+mutate(cl,total=Freq/293 * 100)
 ```
-
-Then, you might be intrigued to whether females and males have different occurrence in each disorder. Let's check it. 
+Then, you might be intrigued to whether females and males have different occurrence in each disorder. Let's check it.
 ```{r}
-# Please write your code
+df <- filter(d,PatientSex == "F")
+df_cl <- as.data.frame(table(Female_Class=df$Classification))
+dm <- filter(d,PatientSex =="M")
+dm_cl <- as.data.frame(table(Male_Class=dm$Classification))
+mutate(df_cl)
+mutate (dm_cl)
 ```
-
 Another question you can ask is whether different mutation consequences occur in each phenotype. Let's find out how many mutation consequences are observed in each phenotype. 
 ```{r}
-# Please write your code
+as.data.frame(table(Phenotype=d$Classification,Mutation_consequences=d$Effect)) %>% arrange(Phenotype)
 ```
-
 ## 3.4. Find the position where different consequences of mutations occur
 If you checked the recurrent mutations, you might want to find a locus where two or more variants occur. Such loci might indicate functionally important position of the gene and you might find some insight as to a cause of disease.
-```{r}
-# Please write your code
-```
 
+```{r}
+i <- 1:293
+p <- gsub('[^0-9]', '', d[i, 'c.DNA'])
+p.d<- as.data.frame(table(c.DNApositions=p))
+filter(p.d,Freq>1)
+```
 ## 3.5. Sketch a plot to visualize your analysis
 When you examine the dataset, you would draw something to show your output. Though we haven't learnt how to plot data yet, we can have a quick sketch for the dataset. There's no restriction on your suggestion. Please submit your hand-drawing for the plot you would like to show from this dataset.
 
-
+![firstimage](sketch graph.jpeg)
