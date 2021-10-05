@@ -138,7 +138,6 @@ class(p)
 ```
 
 5. Now we are going to add a layer and the corresponding aesthetic mappings. For the murders data we plotted total murders versus population sizes. Explore the ```murders``` data frame to remind yourself what are the names for these two variables and select the correct answer. **Hint**: Look at ```?murders```.
-
 a. ```state``` and ```abb```.
 b. ```total_murders``` and ```population_size```.
 c. ```total``` and ```population```.
