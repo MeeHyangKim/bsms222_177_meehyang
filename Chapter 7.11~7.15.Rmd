@@ -250,5 +250,3 @@ p +
   scale_y_log10() +
   ggtitle("Gun murder data")
 ```
-
-
