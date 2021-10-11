@@ -288,7 +288,7 @@ d %>% filter(type=="transcript") %>%
 2. Please calculate the quantiles (0%, 25%, 50%, 75%, 100%) of the gene length for protein coding genes and long noncoding genes.
 
 ```{r}
-d%>%filter(gene_type %in% c("protein_coding", "lncRNA")) %>% group_by(gene_type) %>% count(width) %>% summarise (width = quantile(width,c(0,0.25,0.50,0.75,1)), .groups ="keep") %>% mutate(q=c(0,0.25,0.50,0.75,1)) 
+d%>%filter(gene_type %in% c("protein_coding", "lncRNA")) %>% group_by(gene_type) %>% summarise (width = quantile(width,c(0,0.25,0.50,0.75,1)), .groups ="keep") %>% mutate(q=c(0,0.25,0.50,0.75,1))
 ```
 
 3. Please count the number of transcripts by chromosomes.
