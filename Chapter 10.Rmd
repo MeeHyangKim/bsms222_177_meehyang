@@ -374,6 +374,7 @@ Define these objects:
 state <- dat$state
 rate <- dat$count/dat$population*10000*52/dat$weeks_reporting
 ```
+
 Redefine the ```state``` object so that the levels are re-ordered. Print the new object ```state``` and its levels so you can see that the vector is not re-ordered by the levels.
 ```{r}
 state <- reorder(state, rate)
@@ -382,8 +383,7 @@ levels(state)
 
 5. Now with one line of code, define the ```dat``` table as done above, but change the use mutate to create a rate variable and re-order the state variable so that the levels are re-ordered by this variable. Then make a barplot using the code above, but for this new ```dat```.
 ```{r}
-dat <- us_contagious_diseases %>% filter(year==1967 & disease =="Measles" & !is.na(population)) %>% mutate(rate=count/population*10000*52/weeks_reporting) %>% mutate(state=reorder(state,rate))
-dat %>% ggplot(aes(state,rate))+geom_bar(state="identity") + coord_flip()
+dat %>% mutate(state = reorder(state, rate, FUN = mean)) %>% ggplot(aes(state, rate)) + geom_bar(stat="identity") + coord_flip()
 ```
 
 6. Say we are interested in comparing gun homicide rates across regions of the US. We see this plot:
@@ -405,9 +405,8 @@ c. It does not show all the data. We do not see the variability within a region 
 d. The Northeast has the lowest average.
 
 ```{r}
-#> answer is 
+#> answer is c
 ```
-
 
 7. Make a boxplot of the murder rates defined as
 ```{r}
@@ -417,13 +416,10 @@ murders %>% mutate(rate = total/population*100000)
 by region, showing all the points and ordering the regions by their median rate.
 
 ```{r}
-
+murders %>% mutate(rate=total/population*100000) %>% mutate(region=reorder(region, rate, FUN=median)) %>% ggplot(aes(region, rate)) + geom_boxplot() + geom_point()
 ```
-
-
 8. The plots below show three continuous variables.
 ![](https://rafalab.github.io/dsbook/book_files/figure-html/pseudo-3d-exercise-1.png)
-
 The line $x=2$ appears to separate the points. But it is actually not the case, which we can see by plotting the data in a couple of two-dimensional points.
 
 ![](https://rafalab.github.io/dsbook/book_files/figure-html/pseud-3d-exercise-2-1.png)
@@ -432,6 +428,10 @@ a. Humans are not good at reading pseudo-3D plots.
 b. There must be an error in the code.
 c. The colors confuse us.
 d. Scatterplots should not be used to compare two variables when we have access to 3.
+
+```{r}
+#> answer is a
+```
 
 ## 10.14 Case study: vaccines and infectious diseases
 
@@ -519,22 +519,63 @@ dat %>%
             color="black") + 
   geom_vline(xintercept=1963, col = "blue")
 ```
-
 In theory, we could use color to represent the categorical value state, but it is hard to pick 50 distinct colors.
 
 ## 10.15 Exercises
 
 1. Reproduce the image plot we previously made but for smallpox. For this plot, do not include years in which cases were not reported in 10 or more weeks.
 
+```{r}
+sp <- us_contagious_diseases %>%
+  filter(!state %in% c("Hawaii", "Alaska") & disease == "Smallpox" & weeks_reporting>=10 ) %>%
+  mutate(rate = count / population * 10000 * 52 / weeks_reporting) %>% 
+  mutate(state = reorder(state, rate))
+
+sp %>% ggplot(aes(year, state, fill = rate)) + geom_tile(color = "grey50") +scale_x_continuous(expand=c(0,0)) +
+  scale_fill_gradientn(colors = brewer.pal(9, "Reds"), trans = "sqrt") +  theme_minimal() +  theme(panel.grid = element_blank(), 
+        legend.position="bottom", 
+        text = element_text(size = 8)) +
+  ggtitle("Smallpox") + 
+  ylab("") + xlab("")
+```
 2. Now reproduce the time series plot we previously made, but this time following the instructions of the previous question for smallpox.
+
+```{r}
+sp2 <- us_contagious_diseases %>%
+  filter(disease == "Smallpox" & weeks_reporting>=10) %>% group_by(year) %>%  summarise(us_rate=sum(count,na.rm=TRUE)/sum(population,na.rm=TRUE)*10000) 
+
+sp %>% 
+  filter(!is.na(rate)) %>%
+    ggplot() +
+  geom_line(aes(year, rate, group = state),  color = "grey50", 
+            show.legend = FALSE, alpha = 0.2, size = 1) +
+  geom_line(mapping = aes(year, us_rate),  data =sp2 , size = 1) +
+  scale_y_continuous(trans = "sqrt", breaks = c(1, 5, 10, 20)) + 
+  ggtitle("Cases per 10,000 by state") + 
+  xlab("") + ylab("") +
+  geom_text(data = data.frame(x = 1938, y = 2), 
+            mapping = aes(x, y, label="US average"), 
+            color="black") 
+```
 
 3. For the state of California, make a time series plot showing rates for all diseases. Include only years with 10 or more weeks reporting. Use a different color for each disease.
 
-4. Now do the same for the rates for the US. Hint: compute the US rate by using summarize: the total divided by total population.
+```{r}
+ca <- us_contagious_diseases %>%   filter(state == "California" & weeks_reporting>=10) %>%  mutate(rate = count / population * 10000 * 52 / weeks_reporting) %>% 
+  mutate(state = reorder(state, rate))
+ca %>% ggplot() + geom_line(aes(year, rate, col=disease), size=1) + scale_y_continuous(trans="sqrt", breaks=c(5,25,125)) + ggtitle("Cases per 10,000 in California") +   xlab("") + ylab("")
+```
 
+4. Now do the same for the rates for the US. Hint: compute the US rate by using summarize: the total divided by total population.
 
 ```{r}
 d %>% ggplot (aes(team,expression)) + geom_boxplot(aes(col=team))
 d %>% mutate(is_autosome=ifelse(seqnames%in%c("chrM","chrY","ChrX"), "N","Y"),"NA")
+```
+
+```{r}
+us <- us_contagious_diseases %>%   filter(weeks_reporting>=10) %>%  mutate(rate = count / population * 10000 * 52 / weeks_reporting) %>% 
+  mutate(state = reorder(state, rate))
+us %>% ggplot() + geom_line(aes(year, rate, col=disease), size=1) + scale_y_continuous(trans="sqrt", breaks=c(5,25,125,300)) + ggtitle("Cases per 10,000 in US") +   xlab("") + ylab("")
 ```
 
