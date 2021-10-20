@@ -569,11 +569,6 @@ ca %>% ggplot() + geom_line(aes(year, rate, col=disease), size=1) + scale_y_cont
 4. Now do the same for the rates for the US. Hint: compute the US rate by using summarize: the total divided by total population.
 
 ```{r}
-d %>% ggplot (aes(team,expression)) + geom_boxplot(aes(col=team))
-d %>% mutate(is_autosome=ifelse(seqnames%in%c("chrM","chrY","ChrX"), "N","Y"),"NA")
-```
-
-```{r}
 us <- us_contagious_diseases %>%   filter(weeks_reporting>=10) %>%  mutate(rate = count / population * 10000 * 52 / weeks_reporting) %>% 
   mutate(state = reorder(state, rate))
 us %>% ggplot() + geom_line(aes(year, rate, col=disease), size=1) + scale_y_continuous(trans="sqrt", breaks=c(5,25,125,300)) + ggtitle("Cases per 10,000 in US") +   xlab("") + ylab("")
