@@ -186,3 +186,68 @@ error_avg(10000)
 error_avg(-10000)
 ```
 
+## 11.7 Case study: self-reported student heights
+The heights we have been looking at are not the original heights reported by students. The original reported heights are also included in the **dslabs** package and can be loaded like this:
+
+```{r}
+library(dslabs)
+data("reported_heights")
+```
+Height is a character vector so we create a new column with the numeric version:
+
+```{r}
+reported_heights <- reported_heights %>%
+  mutate(original_heights = height, height = as.numeric(height))
+```
+
+Note that we get a warning about NAs. This is because some of the self reported heights were not numbers. We can see why we get these:
+
+```{r}
+reported_heights %>% filter(is.na(height)) %>%  head()
+
+```
+
+Some students self-reported their heights using feet and inches rather than just inches. Others used centimeters and others were just trolling. For now we will remove these entries:
+
+```{r}
+reported_heights <- filter(reported_heights, !is.na(height))
+
+```
+
+If we compute the average and standard deviation, we notice that we obtain strange results. The average and standard deviation are different from the median and MAD:
+
+```{r}
+reported_heights %>% 
+  group_by(sex) %>%
+  summarize(average = mean(height), sd = sd(height),
+            median = median(height), MAD = mad(height))
+```
+
+This suggests that we have outliers, which is confirmed by creating a boxplot:
+
+![](https://rafalab.github.io/dsbook/book_files/figure-html/height-outlier-ggplot-1.png)
+
+We can see some rather extreme values. To see what these values are, we can quickly look at the largest values using the arrange function:
+
+```{r}
+reported_heights %>% arrange(desc(height)) %>% top_n(10, height)
+
+```
+
+The first seven entries look like strange errors. However, the next few look like they were entered as centimeters instead of inches. Since 184 cm is equivalent to six feet tall, we suspect that 184 was actually meant to be 72 inches.
+
+We can review all the nonsensical answers by looking at the data considered to be *far out* by Tukey:
+
+```{r}
+whisker <- 3*IQR(reported_heights$height)
+max_height <- quantile(reported_heights$height, .75) + whisker
+min_height <- quantile(reported_heights$height, .25) - whisker
+reported_heights %>% 
+  filter(!between(height, min_height, max_height)) %>% 
+  select(original_heights) %>%
+  head(n=10) %>% pull(original_heights)
+```
+
+Examining these heights carefully, we see two common mistakes: entries in ```x.y``` with ```x``` and ```y``` representing feet and inches, respectively, which turn out to be too small. Some of the even smaller values, such as 1.6, could be entries in meters.
+
+In the Data Wrangling part of this book we will learn techniques for correcting these values and converting them into inches. Here we were able to detect this problem using careful data exploration to uncover issues with the data: the first step in the great majority of data science projects.
