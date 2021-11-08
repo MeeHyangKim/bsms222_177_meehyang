@@ -1,0 +1,49 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Introduction
+
+
+Download the packages
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(tibble)
+```
+
+
+```{r}
+library(readxl)
+readxl::excel_sheets('1-s2.0-S0092867420307431-mmc6.xlsx')
+a = read_excel('1-s2.0-S0092867420307431-mmc6.xlsx', sheet=2, col_names=TRUE)
+```
+
+Prepare and rearrange the data
+```{r}
+a <-t(a)
+colnames(a)<-a[1,]
+a <- a[-1,]
+colnames(a)<-gsub(" ","_",colnames(a))
+b <-as.data.frame(a[5:87,80:2948],drop=false)
+y <- cbind(ID = rownames(b),b)
+rownames(y)<-NULL
+```
+
+```{r}
+b.long <- pivot_longer(y,cols=-1, names_to="Protein", values_to="P_Values")
+```
+
+
+```{r}
+b.long %>% ggplot(aes(x=Protein, y=ID, fill=P_Values)) + geom_tile() + xlab(label="ID")
+```
+
+
+
+
+
+
