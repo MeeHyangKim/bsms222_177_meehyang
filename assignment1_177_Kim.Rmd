@@ -24,6 +24,7 @@ library(forcats)
 library(ggridges)
 library(cowplot)
 library(ggpubr)
+library(broom)
 ```
 
 Import the excel file and specify the sheet that is needed.
@@ -43,7 +44,7 @@ colnames(a) <- gsub("\r?\n|\r","_",colnames(a))
 In order to select a specific range in the ```ANOVA__q-value', it should first be converted to numeric values. After applying the range, change the class back into a character for rearrangment of the dataframe.
 ```{r}
 a$`ANOVA__q-value` <- as.numeric(a$`ANOVA__q-value`) 
-a <- subset(a, `ANOVA__q-value` = 0 | is.na(`ANOVA__q-value`))
+a <- a %>% filter(`ANOVA__q-value`==0 | is.na(`ANOVA__q-value`))
 a$`ANOVA__q-value` <- as.character(a$`ANOVA__q-value`) 
 ```
 
@@ -66,7 +67,7 @@ c <- b %>% filter(SmokingStatus=="no", Gender=="female") %>%
   pivot_longer(cols= !c(OverallStaging, id),
                names_to= "Protein", 
                values_to="Log2T/N")
-c$`Log2T/N`<- as.numeric(c$`Log2T/N`)
+c$`Log2T/N`<-as.numeric(c$`Log2T/N`)
 ```
 
 Plot the heatmap.
@@ -84,7 +85,7 @@ c %>%
                        low="blue",
                        mid="white",
                        high="red",
-                       na.value = "black") +
+                      ) +
   geom_tile() + 
   guides(fill=guide_colourbar(barwidth=2.5, barheight = 30)) +
     geom_xsidetile(aes(y=OverallStaging, xfill=OverallStaging)) +
@@ -94,10 +95,68 @@ c %>%
   x="Patient ID", 
   y="Protein")
 ```
-
-From the figure above, it is evident that bumber of non-smoking female patients are highest in stage IA, whereas there is only one patient in tumor stage IIB. As seen on the heatmap, both highest and lowest phosphorylation of proteins exist in tumor stage IA. In order to take a closer look and visualise the difference of protein phosphorylation among tumor stage, 5 proteins with highest phosphorylation (P15088, P23946, P55083, Q9BU40, P08311)and lowest phosphorylation(O75940, O95171, O15541, Q9UKY7, Q16625) were chosen resepectively. As expected, 10 of these proteins all existed in tumor stage IA. 
+From the figure above, it is evident that number of non-smoking female patients are highest in stage IA, whereas there is only one patient in tumor stage IIB. As seen on the heatmap, both highest and lowest phosphorylation of proteins exist in tumor stage IA. In order to take a closer look and visualise the difference of protein phosphorylation among tumor stage, 5 proteins with highest phosphorylation (P15088, P23946, P55083, Q9BU40, P08311)and lowest phosphorylation(O75940, O95171, O15541, Q9UKY7, Q16625) were chosen resepectively. As expected, 10 of these proteins all existed in tumor stage IA. 
 
 ## 4. Plot the second visualisation
+Select 10 specific proteins with highest(P15088, P23946, P55083, Q9BU40, P08311) and lowest(O75940, O95171, O15541, Q9UKY7, Q16625) phosphorylation and turn the data frame into a longer format for it to be possible to plot heatmap.
+```{r}
+f <- b %>% filter(SmokingStatus=="no", Gender=="female") %>% select(id, P15088, P23946, P55083, Q9BU40, P08311, OverallStaging) %>%   slice(5:n())%>% group_by(OverallStaging) %>% pivot_longer(col=P15088:P08311, names_to="Protein",values_to="Log2T/N")
+f$`Log2T/N` <- as.numeric(f$`Log2T/N`)
+g <- b %>% filter(SmokingStatus=="no", Gender=="female") %>% select(id, O75940, O95171, O15541, Q9UKY7, Q16625, OverallStaging) %>%   slice(5:n())%>% group_by(OverallStaging) %>% pivot_longer(col=O75940:Q16625, names_to="Protein",values_to="Log2T/N")
+g$`Log2T/N` <- as.numeric(g$`Log2T/N`)
+```
+
+Plot heatmap
+```{r,fig.height=4, fig.width=12}
+HP_heatmap <- f %>%
+  group_by(OverallStaging) %>% 
+  arrange(OverallStaging) %>%
+  ggplot(aes(x=fct_inorder(id), y=Protein, fill=`Log2T/N`)) +
+  theme(text=element_text(size=8), 
+        axis.text.x = element_text(angle =90, size=5, vjust = 0.4), 
+        axis.text.y = element_text(size=7)) +
+  scale_fill_gradient2(midpoint=0,
+                       limit=c(-4.4,7.3),
+                       name='Log2T/N',
+                       low="blue",
+                       mid="white",
+                       high="red",
+                      ) +
+  geom_tile() + 
+  guides(fill=guide_colourbar(barwidth=1, barheight = 6)) +
+    geom_xsidetile(aes(y=OverallStaging, xfill=OverallStaging)) +
+    scale_xfill_manual(values=c("red","orange","yellow","green","blue")) +
+  labs(title="Differentially regulated proteins by tumor stage in non-smoking females",
+       subtitle = "selected high proteins in IA",
+  x="Patient ID", 
+  y="Protein")
+
+LP_heatmap<- g %>%
+  group_by(OverallStaging) %>% 
+  arrange(OverallStaging) %>%
+  ggplot(aes(x=fct_inorder(id), y=Protein, fill=`Log2T/N`)) +
+  theme(text=element_text(size=8), 
+        axis.text.x = element_text(angle =90, size=5, vjust = 0.4), 
+        axis.text.y = element_text(size=7)) +
+  scale_fill_gradient2(midpoint=0,
+                       limit=c(-4.4,7.3),
+                       name='Log2T/N',
+                       low="blue",
+                       mid="white",
+                       high="red",
+                      ) +
+  geom_tile() + 
+  guides(fill=guide_colourbar(barwidth=1, barheight = 6)) +
+    geom_xsidetile(aes(y=OverallStaging, xfill=OverallStaging)) +
+    scale_xfill_manual(values=c("red","orange","yellow","green","blue")) +
+  labs(title="Differentially regulated proteins by tumor stage in non-smoking females",
+       subtitle = "selected low proteins in IA",
+  x="Patient ID", 
+  y="Protein")
+ggarrange(HP_heatmap,LP_heatmap, labels = c("C","D"))
+```
+
+## 4. Plot the third visualisation
 Select 10 specific proteins with highest(P15088, P23946, P55083, Q9BU40, P08311) and lowest(O75940, O95171, O15541, Q9UKY7, Q16625) phosphorylation and turn the data frame into a longer format for it to be possible to plot ridgelines.
 ```{r}
 d <- b %>% filter(SmokingStatus=="no", Gender=="female") %>% select(P15088, P23946, P55083, Q9BU40, P08311, OverallStaging) %>% group_by(OverallStaging) %>% pivot_longer(col=P15088:P08311, names_to="H_Protein",values_to="Log2T/N")
@@ -106,9 +165,8 @@ e <- b %>% filter(SmokingStatus=="no", Gender=="female") %>% select(O75940, O951
 e$`Log2T/N` <- as.numeric(e$`Log2T/N`)
 ```
 
-
 Plot ridgelines
-```{r}
+```{r,fig.height=4, fig.width=12}
 HP_stage <- d %>%
   ggplot(aes(x=`Log2T/N`, y= fct_reorder(H_Protein,`Log2T/N`), fill=stat(x))) +
     geom_density_ridges_gradient() +
@@ -121,7 +179,7 @@ HP_stage <- d %>%
   labs(x = 'Log2T/N',
        y = 'Protein',
        fill = 'Log2T/N',
-       title = "Highest Expressed Protein in each tumor stage") +
+       title = "Highest Expressed Protein in IA for each tumor stage") +
       facet_wrap(.~OverallStaging) 
 
 LP_stage<- e %>%
@@ -136,15 +194,54 @@ LP_stage<- e %>%
   labs(x = 'Log2T/N',
        y = 'Protein',
        fill = 'Log2T/N',
-       title = "Lowest Expressed Protein in each tumor stage") +
+       title = "Lowest Expressed Protein in IA for each tumor stage") +
       facet_wrap(.~OverallStaging)
-```
-
-```{r,fig.height=4, fig.width=12}
 ggarrange(HP_stage,LP_stage, labels = c("A","B"))
 ```
+
 Plotting ridgelines with 5 proteins from each high and low phosphorylation clearly showed the difference of phosphorylation between tumor stages. Both highest and lowest phosphorylated proteins were in tumor stage IA, which can be seen by the density of the colour compared with other tumor stages. Then, tumor stage IB always came next for high and low phosphorylation of proteins. Interestingly, when proteins were highly or lowly phosphorylated in tumor stage IA and IB, they were in contrast lowly and highly phosphorylated repectively in tumor stages IIA and ≥II. However, there is only one patient in tumor stage IIB, which is why it is impossible to draw a ridgeline, thus phosphorylation values of each proteins are shown as a dot. In stage IIB, selected proteins for each highest and lowest phosphorylation strongly shows that all these proteins are in correlation as none of the values were oppositely expressed.
+
+
 
 ## 5. Discussion
 After drawing the heatmap and plotting ridgelines with selected highly and lowly phosphorylated proteins, the results showed a clear difference between tumor stage IA, IB and IIA and ≥II. Research showed that 3 out of 5 highest phosphorylated proteins (P15088, P23946, P08311) in tumor stage IA had a function of angiotensin maturation. With careful consideration, as tumor stage IA and IB is early stage, protein with angiotensin maturation would be highly phosphorylated in order for cancer cells to develop. This is only based on 3 proteins that are selected within small range, therefore it may not always be the case which means that this can be a further investigation later on. 
 However, there is also a limitation to these plots. In order to minimise the number of proteins, values with 0 ANOVA qvalues were chosen. This ANOVA qvalue is calculated within the different subtypes, which means that it might not be as accurate when used to compare between different tumor stages. Even though, this is the case, due to the fact that the subtypes were mostly divided by stages, it was thought to be possible to see a correlation. 
+
+## 6. Feedback 
+1. One of my feedback was to make the scale of x.axis the same for the second plot. The minimum value would be -5 and the maximum value would be 7.5 which would be the same as plot A. Therefore, if I replot my second plot according to the feedback I received:
+```{r, fig.height=4, fig.width=12}
+HP_stageE1 <- d %>%
+  ggplot(aes(x=`Log2T/N`, y= fct_reorder(H_Protein,`Log2T/N`), fill=stat(x))) +
+    geom_density_ridges_gradient() +
+    geom_point(aes(colour=`Log2T/N`)) +
+    scale_color_gradient2(high = "blue", mid = "white", low = "red") +
+  guides(fill = "none") +
+  scale_fill_gradient2(high = "blue", mid = "white", low = "red") +
+   scale_x_continuous(limits = c(-5, 7)) +
+   coord_cartesian(clip = "off") +
+  labs(x = 'Log2T/N',
+       y = 'Protein',
+       fill = 'Log2T/N',
+       title = "Highest Expressed Protein in IA for each tumor stage") +
+      facet_wrap(.~OverallStaging) 
+
+LP_stageE1 <- e %>%
+  ggplot(aes(x=`Log2T/N`, y= fct_reorder(L_Protein,`Log2T/N`), fill=stat(x))) +
+    geom_density_ridges_gradient() +
+    geom_point(aes(colour=`Log2T/N`)) +
+    scale_color_gradient2(high = "blue", mid = "white", low = "red") +
+  guides(fill = "none") +
+  scale_fill_gradient2(high = "blue", mid = "white", low = "red") +
+   coord_cartesian(clip = "off", xlim=c(-5, 7)) +
+  labs(x = 'Log2T/N',
+       y = 'Protein',
+       fill = 'Log2T/N',
+       title = "Lowest Expressed Protein in IA for each tumor stage") +
+      facet_wrap(.~OverallStaging)
+
+ggarrange(HP_stageE1,LP_stageE1, labels = c("C","D"))
+```
+Plot C and A is the same as I mentioned above. However, making plot B to the same x.axis value would give plot D, which shows unmeaningful spaces. 
+This would be the same for the another feedback I got, which is to arrange the two legends to one legend. The range for each legend is the most appropriate for each plot, but if this range is increased to fit two plots, the colours would be lighter for one plot and it would be difficult to visalise.
+
+Another feedback I got was why the data was limited to non-smoking females. This was suggested because if the data was not limited to non-smokers, there would be three more patients for tumor stage IIB. I thought this was unnecessary because I thought that limiting the data to necessary needs is more important than getting a few more data values. I wanted to keep the data of patients to female and non-smokers so the details of the patients do not vary so much.
