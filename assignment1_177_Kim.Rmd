@@ -153,7 +153,7 @@ LP_heatmap<- g %>%
        subtitle = "selected low proteins in IA",
   x="Patient ID", 
   y="Protein")
-ggarrange(HP_heatmap,LP_heatmap, labels = c("C","D"))
+ggarrange(HP_heatmap,LP_heatmap, labels = c("1","2"))
 ```
 
 ## 4. Plot the third visualisation
