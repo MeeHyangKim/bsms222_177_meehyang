@@ -198,7 +198,6 @@ LP_stage<- e %>%
       facet_wrap(.~OverallStaging)
 ggarrange(HP_stage,LP_stage, labels = c("A","B"))
 ```
-
 Plotting ridgelines with 5 proteins from each high and low phosphorylation clearly showed the difference of phosphorylation between tumor stages. Both highest and lowest phosphorylated proteins were in tumor stage IA, which can be seen by the density of the colour compared with other tumor stages. Then, tumor stage IB always came next for high and low phosphorylation of proteins. Interestingly, when proteins were highly or lowly phosphorylated in tumor stage IA and IB, they were in contrast lowly and highly phosphorylated repectively in tumor stages IIA and ≥II. However, there is only one patient in tumor stage IIB, which is why it is impossible to draw a ridgeline, thus phosphorylation values of each proteins are shown as a dot. In stage IIB, selected proteins for each highest and lowest phosphorylation strongly shows that all these proteins are in correlation as none of the values were oppositely expressed.
 
 
